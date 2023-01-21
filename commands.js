@@ -65,6 +65,13 @@ export const TEST_COMMAND = {
   type: 1,
 };
 
+// Pomodoro command
+export const POMODORO_COMMAND = {
+    name: 'pomodoro',
+    description: 'Outline a pomodoro session',
+    type: 1,
+}
+
 // Command containing options
 export const CHALLENGE_COMMAND = {
   name: 'challenge',
