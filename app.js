@@ -14,6 +14,7 @@ import {
     TEST_COMMAND,
     HasGuildCommands, POMODORO_COMMAND,
 } from './commands.js';
+import fetch from 'node-fetch';
 
 // Create an express app
 const app = express();
