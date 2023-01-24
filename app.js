@@ -15,6 +15,7 @@ import {
     HasGuildCommands, POMODORO_COMMAND,
 } from './commands.js';
 import fetch from 'node-fetch';
+import {formatTime} from "./pomodoro.js";
 
 // Create an express app
 const app = express();
@@ -61,35 +62,30 @@ app.post('/interactions', async function (req, res) {
 
         // "pomodoro" guild command
         if (name === 'pomodoro') {
-            //  get current time
             const now = new Date();
             const midnight = new Date();
             midnight.setHours(24, 0, 0, 0);
             let timeLeft = (midnight - now) / 1000;
             let currentTime = now;
             let pomodoroString = "";
+
             while (timeLeft > 0) {
                 const workTime = Math.min(timeLeft, 60 * 60);
                 timeLeft -= workTime;
-                pomodoroString += `${currentTime.toTimeString().slice(0,5)} ~ ${new Date(currentTime.getTime() + workTime * 1000).toTimeString().slice(0,5)} 作業 \n`;
+                pomodoroString += formatTime(currentTime, workTime, '作業');
                 currentTime = new Date(currentTime.getTime() + workTime * 1000);
 
                 const breakTime = Math.min(timeLeft, 10 * 60);
-                pomodoroString += `${currentTime.toTimeString().slice(0,5)} ~ ${new Date(currentTime.getTime() + breakTime * 1000).toTimeString().slice(0,5)} 休憩 \n`
+                pomodoroString += formatTime(currentTime, breakTime, '休憩');
                 timeLeft -= breakTime;
-                currentTime = new Date(currentTime.getTime() + breakTime*1000);
+                currentTime = new Date(currentTime.getTime() + breakTime * 1000);
             }
 
-            // Get some quotes
             const endpoint = `https://meigen.doodlenote.net/api/json.php?c=1`;
             const response = await fetch(endpoint);
             const data = await response.json();
             const quote = data[0]["meigen"];
-            // autherはtypoではない see: https://meigen.doodlenote.net/api/json.php
             const author = data[0]["auther"];
-
-
-            // add some cheerful word to the end
             pomodoroString += `\n今日も一日頑張りましょう！\n${quote} - ${author}\n`;
 
             return res.send({
